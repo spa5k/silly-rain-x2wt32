@@ -1,125 +1,114 @@
-> A batteries-included Django starter project. To learn more try the books [Django for Beginners](https://djangoforbeginners.com), [Django for APIs](https://djangoforapis.com), and [Django for Professionals](https://djangoforprofessionals.com).
+# Project Management API
 
-## 🚀 Features
+A RESTful API for managing projects, tasks, and team collaboration built with Django and Django REST Framework.
 
-- Django 4.1 & Python 3.10
-- Install via [Pip](https://pypi.org/project/pip/), [Pipenv](https://pypi.org/project/pipenv/), or [Docker](https://www.docker.com/)
-- User log in/out, sign up, password reset via [django-allauth](https://github.com/pennersr/django-allauth)
-- Static files configured with [Whitenoise](http://whitenoise.evans.io/en/stable/index.html)
-- Styling with [Bootstrap v5](https://getbootstrap.com/)
-- Debugging with [django-debug-toolbar](https://github.com/jazzband/django-debug-toolbar)
-- DRY forms with [django-crispy-forms](https://github.com/django-crispy-forms/django-crispy-forms)
+## Features
 
-![Homepage](homepage_41.png)
-----
+- User Authentication with JWT
+- Project Management
+- Task Management
+- Team Collaboration
+- Comments System
 
-## Table of Contents
-* **[Installation](#installation)**
-  * [Pip](#pip)
-  * [Pipenv](#pipenv)
-  * [Docker](#docker)
-* [Next Steps](#next-steps)
-* [Contributing](#contributing)
-* [Support](#support)
-* [License](#license)
+## API Endpoints
 
-----
+### Authentication
+- `POST /api/token/`: Obtain JWT token
+- `POST /api/token/refresh/`: Refresh JWT token
 
-## 📖 Installation
-DjangoX can be installed via Pip, Pipenv, or Docker. To start, clone the repo to your local computer and change into the proper directory.
+### Users
+- `POST /api/users/`: Register new user
+- `GET /api/users/{id}/`: Get user details
+- `PUT/PATCH /api/users/{id}/`: Update user details
+- `DELETE /api/users/{id}/`: Delete user
 
-```
-$ git clone https://github.com/wsvincent/djangox.git
-$ cd djangox
-```
+### Projects
+- `GET /api/projects/`: List all projects
+- `POST /api/projects/`: Create new project
+- `GET /api/projects/{id}/`: Get project details
+- `PUT/PATCH /api/projects/{id}/`: Update project
+- `DELETE /api/projects/{id}/`: Delete project
 
-### Pip
+### Project Members
+- `GET /api/projects/{project_id}/members/`: List project members
+- `POST /api/projects/{project_id}/members/`: Add project member
+- `GET /api/projects/{project_id}/members/{id}/`: Get member details
+- `PUT/PATCH /api/projects/{project_id}/members/{id}/`: Update member role
+- `DELETE /api/projects/{project_id}/members/{id}/`: Remove member
 
-```
-$ python -m venv .venv
+### Tasks
+- `GET /api/projects/{project_id}/tasks/`: List project tasks
+- `POST /api/projects/{project_id}/tasks/`: Create new task
+- `GET /api/tasks/{id}/`: Get task details
+- `PUT/PATCH /api/tasks/{id}/`: Update task
+- `DELETE /api/tasks/{id}/`: Delete task
 
-# Windows
-$ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-$ .venv\Scripts\Activate.ps1
+### Comments
+- `GET /api/tasks/{task_id}/comments/`: List task comments
+- `POST /api/tasks/{task_id}/comments/`: Create new comment
+- `GET /api/comments/{id}/`: Get comment details
+- `PUT/PATCH /api/comments/{id}/`: Update comment
+- `DELETE /api/comments/{id}/`: Delete comment
 
-# macOS
-$ source .venv/bin/activate
+## Setup Instructions
 
-(.venv) $ pip install -r requirements.txt
-(.venv) $ python manage.py migrate
-(.venv) $ python manage.py createsuperuser
-(.venv) $ python manage.py runserver
-# Load the site at http://127.0.0.1:8000
-```
-
-### Pipenv
-
-```
-$ pipenv install
-$ pipenv shell
-(.venv) $ python manage.py migrate
-(.venv) $ python manage.py createsuperuser
-(.venv) $ python manage.py runserver
-# Load the site at http://127.0.0.1:8000
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd <project-directory>
 ```
 
-### Docker
+2. Create and activate a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-To use Docker with PostgreSQL as the database update the `DATABASES` section of `django_project/settings.py` to reflect the following:
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-```python
-# django_project/settings.py
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "db",  # set in docker-compose.yml
-        "PORT": 5432,  # default postgres port
-    }
+4. Apply database migrations:
+```bash
+python manage.py migrate
+```
+
+5. Create a superuser (optional):
+```bash
+python manage.py createsuperuser
+```
+
+6. Run the development server:
+```bash
+python manage.py runserver
+```
+
+The API will be available at `http://localhost:8000/api/`
+
+## Authentication
+
+The API uses JWT (JSON Web Token) authentication. To authenticate:
+
+1. Obtain a token by sending a POST request to `/api/token/` with your credentials:
+```json
+{
+    "username": "your_username",
+    "password": "your_password"
 }
 ```
 
-The `INTERNAL_IPS` configuration in `django_project/settings.py` must be also be updated:
-
-```python
-# config/settings.py
-# django-debug-toolbar
-import socket
-hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-INTERNAL_IPS = [ip[:-1] + "1" for ip in ips]
+2. Include the token in the Authorization header of your requests:
+```
+Authorization: Bearer <your_token>
 ```
 
-And then proceed to build the Docker image, run the container, and execute the standard commands within Docker.
+## Development
 
-```
-$ docker-compose up -d --build
-$ docker-compose exec web python manage.py migrate
-$ docker-compose exec web python manage.py createsuperuser
-# Load the site at http://127.0.0.1:8000
-```
-
-## Next Steps
-
-- Add environment variables. There are multiple packages but I personally prefer [environs](https://pypi.org/project/environs/).
-- Add [gunicorn](https://pypi.org/project/gunicorn/) as the production web server.
-- Update the [EMAIL_BACKEND](https://docs.djangoproject.com/en/4.0/topics/email/#module-django.core.mail) and connect with a mail provider.
-- Make the [admin more secure](https://opensource.com/article/18/1/10-tips-making-django-admin-more-secure).
-- `django-allauth` supports [social authentication](https://django-allauth.readthedocs.io/en/latest/providers.html) if you need that.
-
-I cover all of these steps in my three books: [Django for Beginners](https://djangoforbeginners.com), [Django for APIs](https://djangoforapis.com), and [Django for Professionals](https://djangoforprofessionals.com).
-
-----
-
-## 🤝 Contributing
-
-Contributions, issues and feature requests are welcome! See [CONTRIBUTING.md](https://github.com/wsvincent/djangox/blob/master/CONTRIBUTING.md).
-
-## ⭐️ Support
-
-Give a ⭐️  if this project helped you!
+- The project uses SQLite by default. For production, configure PostgreSQL in `settings.py`
+- CORS is enabled for all origins in development. Configure `CORS_ALLOWED_ORIGINS` for production
+- JWT tokens expire after 60 minutes. Configure `SIMPLE_JWT` settings as needed
 
 ## License
 
-[The MIT License](LICENSE)
+This project is licensed under the MIT License - see the LICENSE file for details.
