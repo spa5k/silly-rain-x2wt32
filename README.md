@@ -52,6 +52,7 @@ A RESTful API for managing projects, tasks, and team collaboration built with Dj
 
 ## Setup Instructions
 
+### Local Development
 1. Clone the repository:
 ```bash
 git clone <repository-url>
@@ -84,7 +85,63 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
+### Docker Development
+
+The project includes a Makefile for common Docker commands. Here are the available commands:
+
+```bash
+make help           # Show all available commands
+make build         # Build Docker images (with --no-cache)
+make up            # Start the application in detached mode
+make down          # Stop the application
+make logs          # View application logs
+make shell         # Open a shell in the web container
+make migrate       # Run database migrations
+make makemigrations # Create new migrations
+make superuser     # Create a superuser
+make test          # Run tests
+make lint          # Run code linting
+make clean         # Remove all containers and volumes
+make static        # Collect static files
+make restart       # Restart the web application
+```
+
+To get started with Docker:
+
+1. Build and start the containers:
+```bash
+make build
+make up
+```
+
+2. View the logs to ensure everything started correctly:
+```bash
+make logs
+```
+
+3. Create a superuser:
+```bash
+make superuser
+```
+
 The API will be available at `http://localhost:8000/api/`
+
+### Environment Variables
+
+When running with Docker, the following environment variables are set in docker-compose.yml:
+
+- `DEBUG`: Set to 1 for development
+- `DJANGO_SETTINGS_MODULE`: Points to the Django settings module
+- `DATABASE_URL`: PostgreSQL connection URL
+- `POSTGRES_DB`: Database name
+- `POSTGRES_USER`: Database user
+- `POSTGRES_PASSWORD`: Database password
+- `SECRET_KEY`: Django secret key
+
+For production, make sure to:
+1. Change these values to secure ones
+2. Use proper environment variable management
+3. Never commit sensitive values to version control
 
 ## Authentication
 
@@ -105,9 +162,29 @@ Authorization: Bearer <your_token>
 
 ## Development
 
-- The project uses SQLite by default. For production, configure PostgreSQL in `settings.py`
+- The project uses SQLite by default for local development
+- PostgreSQL is used when running with Docker
 - CORS is enabled for all origins in development. Configure `CORS_ALLOWED_ORIGINS` for production
 - JWT tokens expire after 60 minutes. Configure `SIMPLE_JWT` settings as needed
+
+## Testing and Linting
+
+Run tests:
+```bash
+make test
+```
+
+Run linting:
+```bash
+make lint
+```
+
+## Cleaning Up
+
+To remove all Docker containers and volumes:
+```bash
+make clean
+```
 
 ## License
 
